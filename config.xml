@@ -20,5 +20,5 @@
     <content src="index.html" />
     <access origin="*" />
 
-    <gap:plugin name="com.phonegap.plugins.geolocation" />
+    <feature name="http://api.phonegap.com/1.0/geolocation"/>
 </widget>
