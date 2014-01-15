@@ -3,73 +3,117 @@
     <title>Example 19-1</title>
     <meta name="viewport" content="width=device-width, height=device-height initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+
+    <style>
+      html, body, #map-canvas {
+        height: 100%;
+        margin: 0px;
+        padding: 0px
+      }
+    </style>
+    <!--
+    Include the maps javascript with sensor=true because this code is using a
+    sensor (a GPS locator) to determine the user's location.
+    See: https://developers.google.com/maps/documentation/javascript/tutorial#Loading_the_Maps_API
+    -->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyBwbOx-tI6P3S1AV7hWZD_tviBg2KgkuHU&sensor=true"></script><script>
+
     <script type="text/javascript" charset="utf-8" src="phonegap.js"></script>
     <script type="text/javascript">
-      //Location content
-      var lc;
-      //PhoneGap Ready variable
-      var pgr = false;
+        //Location content
+        var lc;
+        var map;
+        //PhoneGap Ready variable
+        var pgr = false;
 
-      function onBodyLoad() {
-        //During testing, Let me know we got this far
-        alert("onBodyLoad");
-        //Add the PhoneGap deviceready event listener
-        document.addEventListener("deviceready", onDeviceReady, false);
-      }
+        var locOptions = {
+            enableHighAccuracy: true,
+            timeout: 5000/*,
+            maximumAge: 15000*/
+        };
 
-      function onDeviceReady() {
-        //During testing, Let me know PhoneGap actually
-        // initialized
-        alert("onDeviceReady");
-        //Get a handle we'll use to adjust the accelerometer
-        //content
-        lc = document.getElementById("locationInfo");
-        //Set the variable that lets other parts of the program
-        //know that PhoneGap is initialized
-        pgr = true;
-      }
-
-      function getLocation() {
-        alert("getLocation");
-        if(pgr == true) {
-          var locOptions = {
-            timeout : 5000,
-            enableHighAccuracy : true
-          };
-          //get the current location
-          navigator.geolocation.getCurrentPosition(onLocationSuccess, onLocationError, locOptions);
-          //Clear the current location while we wait for a reading
-          lc.innerHTML = "Reading location...";
-
-        } else {
-          alert("Please wait,\nPhoneGap is not ready.");
+        /*function onDeviceReady() {
+            //During testing, Let me know PhoneGap actually
+            // initialized
+            alert("onDeviceReady");
+            //Get a handle we'll use to adjust the accelerometer
+            //content
+            lc = document.getElementById("locationInfo");
+            //Set the variable that lets other parts of the program
+            //know that PhoneGap is initialized
+            pgr = true;
         }
-      }
 
-      function onLocationSuccess(loc) {
-        alert("onLocationSuccess");
-        //We received something from the API, so first get the
-        // timestamp in a date object so we can work with it
-        var d = new Date(loc.timestamp);
-        //Then replace the page's content with the current
-        // location retrieved from the API
-        lc.innerHTML = '<b>Current Location</b><hr /><b>Latitude</b>: ' + loc.coords.latitude + '<br /><b>Longitude</b>: ' + loc.coords.longitude + '<br /><b>Altitude</b>: ' + loc.coords.altitude + '<br /><b>Accuracy</b>: ' + loc.coords.accuracy + '<br /><b>Altitude Accuracy</b>: ' + loc.coords.altitudeAccuracy + '<br /><b>Heading</b>: ' + loc.coords.heading + '<br /><b>Speed</b>: ' + loc.coords.speed + '<br /><b>Timestamp</b>: ' + d.toLocaleString();
-      }
+        function getLocation() {
+            alert("getLocation");
+            if(pgr == true) {
+                //get the current location
+                navigator.geolocation.getCurrentPosition(onLocationSuccess, onLocationError, locOptions);
+                //Clear the current location while we wait for a reading
+                lc.innerHTML = "Reading location...";
+            } else {
+                alert("Please wait,\nPhoneGap is not ready.");
+            }
+        }*/
 
-      function onLocationError(e) {
-        alert("Geolocation error: #" + e.code + "\n" + e.message);
-      }
+        function onLocationSuccess(loc) {
+
+            var pos = new google.maps.LatLng(loc.coords.latitude, loc.coords.longitude);
+
+            var infowindow = new google.maps.InfoWindow({
+                map: map,
+                position: pos,
+                content: 'Location found using HTML5.'
+            });
+
+            map.setCenter(pos);
+            /*alert("onLocationSuccess");
+            //We received something from the API, so first get the
+            // timestamp in a date object so we can work with it
+            var d = new Date(loc.timestamp);
+            //Then replace the page's content with the current
+            // location retrieved from the API
+            lc.innerHTML = '<b>Current Location</b><hr /><b>Latitude</b>: ' + loc.coords.latitude + '<br /><b>Longitude</b>: ' + loc.coords.longitude + '<br /><b>Altitude</b>: ' + loc.coords.altitude + '<br /><b>Accuracy</b>: ' + loc.coords.accuracy + '<br /><b>Altitude Accuracy</b>: ' + loc.coords.altitudeAccuracy + '<br /><b>Heading</b>: ' + loc.coords.heading + '<br /><b>Speed</b>: ' + loc.coords.speed + '<br /><b>Timestamp</b>: ' + d.toLocaleString();*/
+        }
+
+        function onLocationError(e) {
+            alert("Geolocation error: #" + e.code + "\n" + e.message);
+        }
+
+        function initialize() {
+            var mapOptions = {
+                zoom: 6
+            };
+            map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+            // Try HTML5 geolocation
+            if(navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(onLocationSuccess, onLocationError, locOptions);
+
+                /*navigator.geolocation.getCurrentPosition(function(position) {
+                    var pos = new google.maps.LatLng(position.coords.latitude,
+                                               position.coords.longitude);
+
+                    var infowindow = new google.maps.InfoWindow({
+                        map: map,
+                        position: pos,
+                        content: 'Location found using HTML5.'
+                    });
+
+                    map.setCenter(pos);
+                }, function() {
+                    handleNoGeolocation(true);
+                }, options);*/
+            } else {
+                // Browser doesn't support Geolocation
+                alert("Geolocation Not Supported");
+            }
+        }
+
+        google.maps.event.addDomListener(window, 'load', initialize);
     </script>
   </head>
-  <body onload="onBodyLoad()">
-    <h1>Geolocation API Demo #1</h1>
-    <p>
-      Click the button to determine the current location.
-    </p>
-    <input type="button" value="Refresh Location" onclick="getLocation();">
-    <hr />
-    <p id="locationInfo">
-      Nothing to see here (yet), click the button.
-    </p>
+  <body>
+    <div id="map-canvas"></div>
   </body>
 </html>
