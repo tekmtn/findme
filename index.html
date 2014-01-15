@@ -60,11 +60,13 @@
 
             var pos = new google.maps.LatLng(loc.coords.latitude, loc.coords.longitude);
 
-            var infowindow = new google.maps.InfoWindow({
+            var marker = new google.maps.Marker({position:pos, map:map, title: "You are here"});
+
+            /*var infowindow = new google.maps.InfoWindow({
                 map: map,
                 position: pos,
                 content: 'Location found using HTML5.'
-            });
+            });*/
 
             map.setCenter(pos);
             /*alert("onLocationSuccess");
