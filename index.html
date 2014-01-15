@@ -60,7 +60,8 @@
 
             var pos = new google.maps.LatLng(loc.coords.latitude, loc.coords.longitude);
 
-            var marker = new google.maps.Marker({position:pos, map:map, title: "You are here"});
+            var image = 'img/person.png';
+            var marker = new google.maps.Marker({position:pos, map:map, icon: image});
 
             /*var infowindow = new google.maps.InfoWindow({
                 map: map,
