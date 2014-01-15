@@ -28,7 +28,8 @@
 
         var locOptions = {
             enableHighAccuracy: true,
-            timeout: 5000/*,
+            timeout: 5000,
+            forcePrompt: true/*,
             maximumAge: 15000*/
         };
 
@@ -80,7 +81,12 @@
         }
 
         function onLocationError(e) {
-            alert("Geolocation error: #" + e.code + "\n" + e.message);
+            if(e.code == 2) {
+                alert("Please enable location services");
+            } else {
+                alert("Geolocation error: #" + e.code + "\n" + e.message);  
+            }
+            //
         }
 
         function initialize() {
